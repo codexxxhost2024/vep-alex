@@ -25,10 +25,10 @@ export class WeatherTool {
                     },
                     date: {
                         type: "string",
-                        description: "The date to get weather for (YYYY-MM-DD format)"
+                        description: "The date to get weather for (YYYY-MM-DD format). If not provided, the current date is used."
                     }
                 },
-                required: ["location", "date"]
+                required: ["location"]
             }
         }];
     }
@@ -36,10 +36,11 @@ export class WeatherTool {
     /**
      * Executes the weather tool.
      * Generates a mock weather forecast based on the provided location and date.
+     * If no date is provided, the current date is used.
      *
      * @param {Object} args - The arguments for the tool.
      * @param {string} args.location - The location for the weather forecast.
-     * @param {string} args.date - The date for the weather forecast (YYYY-MM-DD).
+     * @param {string} [args.date] - The date for the weather forecast (YYYY-MM-DD). If not provided, the current date is used.
      * @returns {Promise<Object>} A promise that resolves with the weather forecast.
      * @throws {Error} Throws an error if the tool execution fails.
      */
@@ -47,6 +48,9 @@ export class WeatherTool {
         try {
             Logger.info('Executing Weather Tool', args);
             const { location, date } = args;
+
+            // Use the current date if no date is provided
+            const forecastDate = date || this.getCurrentDate();
 
             // Mock weather data
             const weatherConditions = [
@@ -68,7 +72,7 @@ export class WeatherTool {
             };
 
             // Generate consistent but pseudo-random weather based on location and date
-            const seed = this.hashString(`${location}${date}`);
+            const seed = this.hashString(`${location}${forecastDate}`);
             const condition = weatherConditions[seed % weatherConditions.length];
             const temp = temperatures[condition];
             
@@ -77,12 +81,12 @@ export class WeatherTool {
 
             return {
                 location,
-                date,
+                date: forecastDate,
                 condition,
                 temperature: Math.round(currentTemp),
                 humidity: 40 + (seed % 40), // Random humidity between 40-80%
                 windSpeed: 5 + (seed % 25),  // Random wind speed between 5-30 km/h
-                forecast: `The weather in ${location} on ${date} will be ${condition} with a temperature of ${Math.round(currentTemp)}°C`
+                forecast: `The weather in ${location} on ${forecastDate} will be ${condition} with a temperature of ${Math.round(currentTemp)}°C`
             };
 
         } catch (error) {
@@ -98,7 +102,6 @@ export class WeatherTool {
      * @param {string} str - The input string.
      * @returns {number} The numeric hash.
      */
-    // Helper function to generate a numeric hash from a string
     hashString(str) {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
@@ -108,4 +111,17 @@ export class WeatherTool {
         }
         return Math.abs(hash);
     }
-} 
+
+    /**
+     * Returns the current date in YYYY-MM-DD format.
+     *
+     * @returns {string} The current date in YYYY-MM-DD format.
+     */
+    getCurrentDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+}
