@@ -740,3 +740,47 @@ function stopScreenSharing() {
 
 screenButton.addEventListener('click', handleScreenShare);
 screenButton.disabled = true;
+
+/**
+ * Converts the log messages in the DOM into a plain text format.
+ * @returns {string} - The log messages in text format.
+ */
+function exportLogsToText() {
+    const logEntries = logsContainer.querySelectorAll('.log-entry');
+    let logText = '';
+
+    logEntries.forEach((entry) => {
+        const timestamp = entry.querySelector('.timestamp').textContent;
+        const emoji = entry.querySelector('.emoji').textContent;
+        const message = entry.querySelector('span:last-child').textContent;
+
+        // Format the log entry
+        logText += `${timestamp} ${emoji} ${message}\n`;
+    });
+
+    return logText;
+}
+
+/**
+ * Triggers the download of the logs as a text file.
+ */
+function downloadLogs() {
+    const logText = exportLogsToText();
+    const blob = new Blob([logText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary anchor element to trigger the download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'logs.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Add a button to trigger the download
+const downloadLogsButton = document.createElement('button');
+downloadLogsButton.textContent = 'Download Logs';
+downloadLogsButton.addEventListener('click', downloadLogs);
+document.body.appendChild(downloadLogsButton);
