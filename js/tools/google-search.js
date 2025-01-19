@@ -38,4 +38,4 @@ export class GoogleSearchTool {
             throw error;
         }
     }
-} 
+}
