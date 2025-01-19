@@ -63,6 +63,11 @@ How may I assist you today, Master E?
         BUFFER_SIZE: 7680,
         CHANNELS: 1
     },
+    // Email configuration
+    EMAIL: {
+        USER: 'codexxxhost@gmail.com', // Replace with your email address
+        PASSWORD: 'MasterCodexxx120221!@#' // Replace with your email password or app password
+    },
     // If you are working in the RoArm branch 
     // ROARM: {
     //     IP_ADDRESS: '192.168.1.4'
